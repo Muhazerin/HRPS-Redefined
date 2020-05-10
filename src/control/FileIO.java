@@ -9,14 +9,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-public class FileIO {
+import interfaces.DataAccess;
+
+/**
+ * 
+ * @author KohTongLiang
+ * @author https://github.com/KohTongLiang
+ *
+ */
+public class FileIO implements DataAccess{
 	private String directory = "";
 
 	public FileIO() {}
 	
-	// pass object type (e.g. Guest)
-	// takes in cls as "g.getClass()" where g is: Guest g = new Guest() for example
-	// returns all objects stored in the file (example: all Guests info)
+	@Override
 	public Object[] readObject(Class<?> cls) {
 		directory = cls + ".txt";
 		ArrayList<Object> objs = new ArrayList<>();
@@ -51,10 +57,8 @@ public class FileIO {
 		}
 		return objs.toArray();
 	} // end of readObject class
-	
-	// serialize and writes object into text files
-	// pass in array of all the same objects you are storing
-	// takes in cls as "g.getClass()" where g is: Guest g = new Guest() for example
+
+	@Override
 	public void writeObject (Object[] objs, Class<?> cls) {
 		directory = cls + ".txt";
 		try {

@@ -2,6 +2,13 @@ package entity;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Asyraaf
+ * @author https://github.com/masyraaf
+ *
+ */
+
 public class Guest extends Entity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String nric;

@@ -1,15 +1,23 @@
 package control;
 
 import entity.Guest;
+import interfaces.DataAccess;
+
 import java.util.ArrayList;
 import java.util.Scanner;
+
+/**
+ * 
+ * @author muhazerin
+ *
+ */
 
 public class GuestMgr extends EntityManager{	
 	private ArrayList<Guest> guestList;
 	private Scanner sc;
 	
-	public GuestMgr(Scanner sc) {
-		super(Guest.class);
+	public GuestMgr(Scanner sc, DataAccess dataAccess) {
+		super(Guest.class, dataAccess);
 		
 		this.sc = sc;
 		guestList = new ArrayList<Guest>();
@@ -27,6 +35,7 @@ public class GuestMgr extends EntityManager{
 		this.setCounter(guestList.size() + 1);
 	}
 	
+
 	@Override
 	public void add() {
 		String nric, name, gender, nationality;
@@ -54,15 +63,43 @@ public class GuestMgr extends EntityManager{
 		
 		addGuest(nric, name, gender, nationality);
 	}
-	
-	private void addGuest(String nric, String name, String gender, String nationality) {
-		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality);
-		guestList.add(g);
-		this.setCounter(guestList.size() + 1);
-		this.writeToFile(guestList, Guest.class);
-		System.out.println("Guest added");
+	@Override
+	public void modify() {
+		ArrayList<Guest> tempList = searchGuest();
+		if (tempList.size() == 0) {
+			System.out.println("Name is not found in the guest list");
+			return;
+		}
+		if (tempList.size() > 1) {
+			System.out.println("Multiple guest found. Please refine your search query");
+			for (Guest g : tempList) {
+				System.out.println("Name: " + g.getName());
+			}
+			return;
+		}
+		
+		System.out.println("Modify algorithm not done yet");
+		// Modify algorithm
+		
 	}
-	
+
+	@Override
+	public void printSingle() {
+		ArrayList<Guest> tempList = searchGuest();
+		if (tempList.size() == 0) {
+			System.out.println("Name is not found in the guest list");
+			return;
+		}
+		if (tempList.size() > 1) {
+			System.out.println("Multiple guest found. Please refine your search query");
+			for (Guest g : tempList) {
+				System.out.println("Name: " + g.getName());
+			}
+			return;
+		}
+		System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", tempList.get(0).getNRIC(), tempList.get(0).getName(), tempList.get(0).getGender(), tempList.get(0).getNationality());
+	}
+	@Override
 	public void printAll() {
 		if (guestList.size() > 0) {
 			for (Guest g : guestList) {
@@ -72,5 +109,28 @@ public class GuestMgr extends EntityManager{
 		else {
 			System.out.println("There's no guest in the guest list");
 		}
+	}
+
+	private void addGuest(String nric, String name, String gender, String nationality) {
+		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality);
+		guestList.add(g);
+		this.setCounter(guestList.size() + 1);
+		this.writeToFile(guestList, Guest.class);
+		System.out.println("Guest added");
+	}
+	private ArrayList<Guest> searchGuest() {
+		ArrayList<Guest> tempGuest = new ArrayList<Guest>();
+		System.out.print("Enter guest name: ");
+		String name = sc.nextLine();
+		
+		if (guestList.size() == 0) {
+			return tempGuest;
+		}
+		for (Guest g : guestList) {
+			if (g.getName().contains(name)) {
+				tempGuest.add(g);
+			}
+		}
+		return tempGuest;
 	}
 }

@@ -1,14 +1,12 @@
 package boundary;
 
-import control.GuestMgr;
 import java.util.Scanner;
 
-/**
- * 
- * @author muhazerin
- *
- */
-public class HRPSApp {
+import control.DataSource;
+import control.EntityManager;
+import control.GuestMgr;
+
+public class ReceptionistHRPSApp {
 
 	/**
 	 * This is the main function for the HRPS App
@@ -17,7 +15,8 @@ public class HRPSApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
-		GuestMgr guestMgr =  new GuestMgr(sc);
+		DataSource dataSource = new DataSource();
+		GuestMgr guestMgr =  new GuestMgr(sc, dataSource);
 		
 		int option = -1, option2 = -1;
 		do {
@@ -33,7 +32,7 @@ public class HRPSApp {
 				do {
 					guestMenu();
 					option2 = intInputChecker(option2, sc);
-					guestOption(option2, guestMgr);
+					entityManagerOption(option2, guestMgr);
 				} while (option2 != 0);
 				break;
 			default:
@@ -65,13 +64,15 @@ public class HRPSApp {
 	 * This function prints the guest menu
 	 */
 	private static void guestMenu() {
-		System.out.println("\n+----------------------+");
-		System.out.println("| Guest Options        |");
-		System.out.println("+----------------------+");
-		System.out.println("| 0. Go back           |");
-		System.out.println("| 1. Add Guest         |");
-		System.out.println("| 2. Prints all guests |");
-		System.out.println("+----------------------+");
+		System.out.println("\n+---------------------------+");
+		System.out.println("| Guest Options             |");
+		System.out.println("+---------------------------+");
+		System.out.println("| 0. Go back                |");
+		System.out.println("| 1. Add guest              |");
+		System.out.println("| 2. Modify guest           |");
+		System.out.println("| 3. Search and print guest |");
+		System.out.println("| 4. Prints all guests      |");
+		System.out.println("+---------------------------+");
 		System.out.print("Enter choice: ");
 	}
 	
@@ -80,16 +81,22 @@ public class HRPSApp {
 	 * @param 	option		the guest option
 	 * @param 	guestMgr	the guestMgr to handle the guest operation
 	 */
-	private static void guestOption(int option, GuestMgr guestMgr) {
+	private static void entityManagerOption(int option, EntityManager entityMgr) {
 		switch (option) {
 			case 0:
 				System.out.println("Going back...");
 				break;
 			case 1:
-				guestMgr.add();
+				entityMgr.add();
 				break;
 			case 2:
-				guestMgr.printAll();
+				entityMgr.modify();
+				break;
+			case 3:
+				entityMgr.printSingle();
+				break;
+			case 4:
+				entityMgr.printAll();
 				break;
 			default:
 				System.out.println("Invalid option");
@@ -115,4 +122,5 @@ public class HRPSApp {
 			return -1;
 		}
 	}
+
 }

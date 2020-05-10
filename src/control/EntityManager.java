@@ -2,14 +2,22 @@ package control;
 
 import java.util.ArrayList;
 
-public abstract class EntityManager {
-	private FileIO fileIO;
+import interfaces.*;
+
+/**
+ * 
+ * @author muhazerin
+ *
+ */
+
+public abstract class EntityManager implements AddObject, ModifyObject, PrintObject{
+	private DataAccess dataAccess;
 	private Object[] objArray;
 	private int counter;
 	
-	public EntityManager(Class<?> cls) {
-		fileIO = new FileIO();
-		objArray = fileIO.readObject(cls);
+	public EntityManager(Class<?> cls, DataAccess dataAccess) {
+		this.dataAccess = dataAccess;
+		objArray = this.dataAccess.readObject(cls);
 		counter = 1;
 	}
 	public int getCounter() {
@@ -22,7 +30,6 @@ public abstract class EntityManager {
 		return objArray;
 	}
 	public void writeToFile(ArrayList<?> arrayList, Class<?> cls) {
-		fileIO.writeObject(arrayList.toArray(), cls);
+		dataAccess.writeObject(arrayList.toArray(), cls);
 	}
-	public abstract void add();
 }
