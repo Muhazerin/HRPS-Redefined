@@ -3,8 +3,8 @@ package boundary;
 import java.util.Scanner;
 
 import control.DataSource;
-import control.EntityManager;
 import control.GuestMgr;
+import control.RoomManager;
 
 public class ReceptionistHRPSApp {
 
@@ -17,6 +17,7 @@ public class ReceptionistHRPSApp {
 		Scanner sc = new Scanner(System.in);
 		DataSource dataSource = new DataSource();
 		GuestMgr guestMgr =  new GuestMgr(sc, dataSource);
+		RoomManager roomMgr = new RoomManager(sc, dataSource);
 		
 		int option = -1, option2 = -1;
 		do {
@@ -32,7 +33,15 @@ public class ReceptionistHRPSApp {
 				do {
 					guestMenu();
 					option2 = intInputChecker(option2, sc);
-					entityManagerOption(option2, guestMgr);
+					guestOption(option2, guestMgr);
+				} while (option2 != 0);
+				break;
+			case 2:
+				option2 = -1;
+				do {
+					roomMenu();
+					option2 = intInputChecker(option2, sc);
+					roomOption(option2, roomMgr);
 				} while (option2 != 0);
 				break;
 			default:
@@ -56,6 +65,7 @@ public class ReceptionistHRPSApp {
 		System.out.println("+-----------------------------------------------------+");
 		System.out.println("| 0. Exit the program                                 |");
 		System.out.println("| 1. Guest Options                                    |");
+		System.out.println("| 2. Room Options                                     |");
 		System.out.println("+-----------------------------------------------------+");
 		System.out.print("Enter choice: ");
 	}
@@ -76,27 +86,70 @@ public class ReceptionistHRPSApp {
 		System.out.print("Enter choice: ");
 	}
 	
+	/*
+	 * This method contains the menu for roomOption
+	 */
+	private static void roomMenu() {
+		System.out.println("\n+------------------------------------------+");
+		System.out.println("| What would you like to do ?              |");
+		System.out.println("| 0. Go back                               |");
+		System.out.println("| 1. Create new room                       |");
+		System.out.println("| 2. Update room details                   |");
+		System.out.println("| 3. List Room                             |");
+		System.out.println("| 4. Check room details                    |");
+		System.out.println("+------------------------------------------+");
+		System.out.print("Enter choice: ");
+	}
+	
 	/**
 	 * This function handles all the operations related to guest
 	 * @param 	option		the guest option
 	 * @param 	guestMgr	the guestMgr to handle the guest operation
 	 */
-	private static void entityManagerOption(int option, EntityManager entityMgr) {
+	private static void guestOption(int option, GuestMgr guestMgr) {
 		switch (option) {
 			case 0:
 				System.out.println("Going back...");
 				break;
 			case 1:
-				entityMgr.add();
+				guestMgr.add();
 				break;
 			case 2:
-				entityMgr.modify();
+				guestMgr.modify();
 				break;
 			case 3:
-				entityMgr.printSingle();
+				guestMgr.printSingle();
 				break;
 			case 4:
-				entityMgr.printAll();
+				guestMgr.printAll();
+				break;
+			default:
+				System.out.println("Invalid option");
+				break;
+		}
+	}
+	
+	/**
+	 * This function handles all the operations related to room
+	 * @param 	option		the guest option
+	 * @param 	roomMgr		the roomMgr to handle the guest operation
+	 */
+	private static void roomOption(int option, RoomManager roomMgr) {
+		switch (option) {
+			case 0:
+				System.out.println("Going back...");
+				break;
+			case 1:
+				roomMgr.add();
+				break;
+			case 2:
+				roomMgr.modify();
+				break;
+			case 3:
+				roomMgr.printAll();
+				break;
+			case 4:
+				roomMgr.printSingle();
 				break;
 			default:
 				System.out.println("Invalid option");

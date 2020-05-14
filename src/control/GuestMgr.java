@@ -1,7 +1,7 @@
 package control;
 
 import entity.Guest;
-import interfaces.DataAccess;
+import interfaces.*;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,7 +12,7 @@ import java.util.Scanner;
  *
  */
 
-public class GuestMgr extends EntityManager{	
+public class GuestMgr extends EntityManager implements AddObject, ModifyObject, PrintSingleObject, PrintAllObjects{	
 	private ArrayList<Guest> guestList;
 	private Scanner sc;
 	
@@ -34,8 +34,6 @@ public class GuestMgr extends EntityManager{
 		}
 		this.setCounter(guestList.size() + 1);
 	}
-	
-
 	@Override
 	public void add() {
 		String nric, name, gender, nationality;
@@ -82,7 +80,6 @@ public class GuestMgr extends EntityManager{
 		// Modify algorithm
 		
 	}
-
 	@Override
 	public void printSingle() {
 		ArrayList<Guest> tempList = searchGuest();
@@ -110,7 +107,6 @@ public class GuestMgr extends EntityManager{
 			System.out.println("There's no guest in the guest list");
 		}
 	}
-
 	private void addGuest(String nric, String name, String gender, String nationality) {
 		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality);
 		guestList.add(g);

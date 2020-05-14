@@ -10,7 +10,7 @@ import interfaces.*;
  *
  */
 
-public abstract class EntityManager implements AddObject, ModifyObject, PrintObject{
+public abstract class EntityManager {
 	private DataAccess dataAccess;
 	private Object[] objArray;
 	private int counter;
