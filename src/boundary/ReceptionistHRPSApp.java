@@ -2,8 +2,9 @@ package boundary;
 
 import java.util.Scanner;
 
-import control.DataSource;
-import control.GuestMgr;
+import control.FileIO;
+import control.GuestManager;
+import control.ReservationManager;
 import control.RoomManager;
 
 public class ReceptionistHRPSApp {
@@ -15,9 +16,10 @@ public class ReceptionistHRPSApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
-		DataSource dataSource = new DataSource();
-		GuestMgr guestMgr =  new GuestMgr(sc, dataSource);
-		RoomManager roomMgr = new RoomManager(sc, dataSource);
+		FileIO fileIO = new FileIO();
+		GuestManager guestMgr =  new GuestManager(sc, fileIO);
+		RoomManager roomMgr = new RoomManager(sc, fileIO);
+		ReservationManager reservationMgr = new ReservationManager(sc, fileIO);
 		
 		int option = -1, option2 = -1;
 		do {
@@ -44,15 +46,21 @@ public class ReceptionistHRPSApp {
 					roomOption(option2, roomMgr);
 				} while (option2 != 0);
 				break;
+			case 3:
+				option2 = -1;
+				do {
+					reservationMenu();
+					option2 = intInputChecker(option2, sc);
+					reservationOption(option2, guestMgr, roomMgr, reservationMgr, sc);
+				} while (option2 != 0);
+				break;
 			default:
 				System.out.println("Invalild choice");
 				break;
 			}
 		} while (option != 0);
 		
-		
-		//guestMgr.add();
-		//guestMgr.printAll();
+		sc.close();
 	}
 
 	/**
@@ -66,6 +74,7 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 0. Exit the program                                 |");
 		System.out.println("| 1. Guest Options                                    |");
 		System.out.println("| 2. Room Options                                     |");
+		System.out.println("| 3. Reservation Options                              |");
 		System.out.println("+-----------------------------------------------------+");
 		System.out.print("Enter choice: ");
 	}
@@ -78,14 +87,13 @@ public class ReceptionistHRPSApp {
 		System.out.println("| Guest Options             |");
 		System.out.println("+---------------------------+");
 		System.out.println("| 0. Go back                |");
-		System.out.println("| 1. Add guest              |");
-		System.out.println("| 2. Modify guest           |");
-		System.out.println("| 3. Search and print guest |");
-		System.out.println("| 4. Prints all guests      |");
+		System.out.println("| 1. Modify guest           |");
+		System.out.println("| 2. Search and print guest |");
+		System.out.println("| 3. Prints all guests      |");
 		System.out.println("+---------------------------+");
 		System.out.print("Enter choice: ");
 	}
-	
+		
 	/*
 	 * This method contains the menu for roomOption
 	 */
@@ -101,26 +109,42 @@ public class ReceptionistHRPSApp {
 		System.out.print("Enter choice: ");
 	}
 	
+	/* 
+	 * This method contains the menu for reservationOption
+	 */
+	private static void reservationMenu() {
+		System.out.println("\n+-------------------------------+");
+		System.out.println("| What would you like to do ?   |");
+		System.out.println("| 0. Go back                    |");
+		System.out.println("| 1. Create reservation         |");
+		System.out.println("| 2. Update reservation detail  |");
+		System.out.println("| 3. Remove reservation         |");
+		System.out.println("| 4. Print a reservation detail |");
+		System.out.println("| 5. Print all reservation      |");
+		System.out.println("+-------------------------------+");
+		System.out.print("Enter choice: ");
+	}
+	
 	/**
 	 * This function handles all the operations related to guest
 	 * @param 	option		the guest option
 	 * @param 	guestMgr	the guestMgr to handle the guest operation
 	 */
-	private static void guestOption(int option, GuestMgr guestMgr) {
+	private static void guestOption(int option, GuestManager guestMgr) {
 		switch (option) {
 			case 0:
 				System.out.println("Going back...");
 				break;
+//			case 1:
+//				//guestMgr.add();
+//				break;
 			case 1:
-				guestMgr.add();
-				break;
-			case 2:
 				guestMgr.modify();
 				break;
-			case 3:
+			case 2:
 				guestMgr.printSingle();
 				break;
-			case 4:
+			case 3:
 				guestMgr.printAll();
 				break;
 			default:
@@ -150,6 +174,39 @@ public class ReceptionistHRPSApp {
 				break;
 			case 4:
 				roomMgr.printSingle();
+				break;
+			default:
+				System.out.println("Invalid option");
+				break;
+		}
+	}
+	
+	private static void reservationOption(int option, GuestManager guestMgr, RoomManager roomMgr, ReservationManager reservationMgr, Scanner sc) {
+		switch (option) {
+			case 0:
+				System.out.println("Going back...");
+				break;
+			case 1:
+				boolean walkIn = false;
+				int choice = -1;
+				
+				while (choice == -1 || (choice != 1 && choice != 2)) {
+					System.out.println("Press 1 for walk-in, 2 for reservation");
+					System.out.print("Enter choice: ");
+					choice = intInputChecker(choice, sc);
+					if (choice != 1 && choice != 2) {
+						System.out.println("Invalid integer");
+					}
+				}
+				if (choice == 1) {
+					walkIn = true;
+				}
+				
+				int guestId = guestMgr.selectObject();
+				int roomId = roomMgr.selectObject(walkIn);
+				
+				
+				reservationMgr.add(guestId, roomId, walkIn);
 				break;
 			default:
 				System.out.println("Invalid option");

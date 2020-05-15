@@ -19,7 +19,7 @@ import entity.DeluxeRoom;
  *
  */
 
-public class RoomManager extends EntityManager implements AddObject, ModifyObject, PrintSingleObject, PrintAllObjects{
+public class RoomManager extends EntityManager implements ModifyObject, PrintSingleObject, PrintAllObjects{
 	private ArrayList<Room> roomList;
 	private Scanner sc;
 	
@@ -72,7 +72,47 @@ public class RoomManager extends EntityManager implements AddObject, ModifyObjec
 		}
 		
 	}
-	@Override
+	public int selectObject(boolean walkIn) {
+		listRoomsByOccupancyRate();
+		boolean valid = false;
+		int roomId = -1;
+		
+		while (!valid) {
+			System.out.print("Enter room number: ");
+			String roomNo = sc.nextLine();
+			String[] parts = roomNo.split("-");
+			if (parts.length == 2) {
+				try {
+					Room r = validateRoomNumber(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+					if (r.getAvailabilityStatus().equals(Room.AvailabilityStatus.VACANT)) {
+						valid = true;
+						roomId = r.getId();
+						if (walkIn) {
+							r.setAvailabilityStatus(Room.AvailabilityStatus.OCCUPIED);
+						}
+						else {
+							r.setAvailabilityStatus(Room.AvailabilityStatus.RESERVED);
+						}
+					}
+					else {
+						System.out.println("Room is not vacant");
+					}
+				}
+				catch (java.lang.NumberFormatException e) {
+					System.out.println("Invalid String");
+					System.out.println(e.getMessage());
+				}
+				catch (java.lang.NullPointerException e) {
+					System.out.println("Invalid room");
+					System.out.println(e.getMessage());
+				}
+			}
+			else {
+				System.out.println("Invalid String");
+			}
+		}
+		return roomId;
+	}
 	public void add() {
 		Room.BedType bt = null;
 		Room.AvailabilityStatus as = null;
@@ -468,5 +508,4 @@ public class RoomManager extends EntityManager implements AddObject, ModifyObjec
 			System.out.println("");
 		}
 	}
-	
 }
