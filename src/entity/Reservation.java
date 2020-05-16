@@ -15,8 +15,8 @@ public class Reservation extends Entity implements Serializable{
 		CONFIRMED, IN_WAITLIST, CHECKED_IN, EXPIRED, CHECKED_OUT;
 	}
 	private static final long serialVersionUID = 1L;
-	private int guestId;
-	private int roomId;
+	private String guestName;
+	private String roomNumber;
 	private LocalDate checkInDate;
 	private LocalDate checkOutDate;
 	private int noOfAdults;
@@ -24,27 +24,30 @@ public class Reservation extends Entity implements Serializable{
 	private ResStatus resStatus;
 	//private ArrayList<RoomService> roomServiceList;
 	
-	public Reservation(int id, int guestId, int roomId, LocalDate checkInDate, int noOfAdults, int noOfChildren) {
+	public Reservation(int id, String guestName, String roomNumber, LocalDate checkInDate, int noOfAdults, int noOfChildren, boolean walkIn) {
 		super(id);
-		this.guestId = guestId;
-		this.roomId = roomId;
+		this.guestName = guestName;
+		this.roomNumber = roomNumber;
 		this.checkInDate = checkInDate;
 		this.checkOutDate = null;
 		this.noOfAdults = noOfAdults;
 		this.noOfChildren = noOfChildren;
-		resStatus = ResStatus.CONFIRMED;
+		if (walkIn)
+			resStatus = ResStatus.CHECKED_IN;
+		else
+			resStatus = ResStatus.CONFIRMED;
 	}
-	public int getGuestId() {
-		return guestId;
+	public String getGuestName() {
+		return guestName;
 	}
-	public void setGuestId(int guestId) {
-		this.guestId = guestId;
+	public void setGuestName(String guestName) {
+		this.guestName = guestName;
 	}
-	public int getRoomId() {
-		return roomId;
+	public String getRoomName() {
+		return roomNumber;
 	}
-	public void setRoomId(int roomId) {
-		this.roomId = roomId;
+	public void setRoom(String roomNumber) {
+		this.roomNumber = roomNumber;
 	}
 	public LocalDate getCheckInDate() {
 		return checkInDate;

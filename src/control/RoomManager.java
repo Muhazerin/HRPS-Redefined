@@ -72,10 +72,10 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 		}
 		
 	}
-	public int selectObject(boolean walkIn) {
+	public String selectObject(boolean walkIn) {
 		listRoomsByOccupancyRate();
 		boolean valid = false;
-		int roomId = -1;
+		String roomNumber = "";
 		
 		while (!valid) {
 			System.out.print("Enter room number: ");
@@ -86,7 +86,7 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 					Room r = validateRoomNumber(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
 					if (r.getAvailabilityStatus().equals(Room.AvailabilityStatus.VACANT)) {
 						valid = true;
-						roomId = r.getId();
+						roomNumber = String.format("%d-%d", r.getRoomLevel(), r.getRoomNumber());
 						if (walkIn) {
 							r.setAvailabilityStatus(Room.AvailabilityStatus.OCCUPIED);
 						}
@@ -111,7 +111,7 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 				System.out.println("Invalid String");
 			}
 		}
-		return roomId;
+		return roomNumber;
 	}
 	public void add() {
 		Room.BedType bt = null;
@@ -160,8 +160,8 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 			roomList.add(new DeluxeRoom(getCounter(), bt, as, wifiEnabled, facing, smokingAllowed, rLevel, rNumber));
 		}
 		setCounter(getCounter()+1);
-		System.out.println("Room has been added");
 		this.writeToFile(roomList, Room.class);
+		System.out.println("Room has been added");
 	}
 	@Override
 	public void modify() {

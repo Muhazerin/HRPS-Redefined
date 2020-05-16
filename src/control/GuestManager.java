@@ -33,12 +33,12 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 		}
 		this.setCounter(guestList.size() + 1);
 	}
-	public int selectObject() {
-		int guestId = -1;
+	public String selectObject() {
+		String guestName = "";
 		if (guestList.size() == 0) {
 			// guestList is empty
 			add();
-			guestId = this.getCounter() - 1;
+			guestName = guestList.get(guestList.size() - 1).getName();
 		}
 		else {
 			// there are items in the guestList,
@@ -54,12 +54,12 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 					System.out.print("Is it this guest? (Y/n): ");
 					choice = sc.nextLine();
 					if (choice.equalsIgnoreCase("y")) {
-						guestId = tempList.get(0).getId();
+						guestName = tempList.get(0).getName();
 					}
 					else if (choice.equalsIgnoreCase("n")) {
 						System.out.println("Ok. Creating new guest");
 						add();
-						guestId = this.getCounter() - 1;
+						guestName = guestList.get(guestList.size() - 1).getName();
 					}
 					else {
 						System.out.println("Invalid Choice");
@@ -69,7 +69,7 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 			else if (tempList.size() == 0) {
 				// guest does not exist in the guestList
 				add();
-				guestId = this.getCounter() - 1;
+				guestName = guestList.get(guestList.size() - 1).getName();
 			}
 			else {
 				// if there is multiple guests found in the guestList,
@@ -91,19 +91,19 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 							String name = sc.nextLine();
 							for (Guest g : tempList) {
 								if (g.getName().equals(name)) {
-									guestId = g.getId();
+									guestName = g.getName();
 									break;
 								}
 							}
-							if (guestId == -1) {
+							if (guestName.equals("")) {
 								System.out.println("Invalid name");
 							}
-						} while (guestId == -1);
+						} while (guestName.equals(""));
 					}
 					else if (choice.equalsIgnoreCase("n")) {
 						System.out.println("Ok. Creating new guest");
 						add();
-						guestId = this.getCounter() - 1;
+						guestName = guestList.get(guestList.size() - 1).getName();
 					}
 					else {
 						System.out.println("Invalid Choice");
@@ -111,7 +111,7 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 				} while (!choice.equalsIgnoreCase("y") && !choice.equalsIgnoreCase("n"));
 			}
 		}
-		return guestId;
+		return guestName;
 	}
 	private void add() {
 		String nric, name, gender, nationality;

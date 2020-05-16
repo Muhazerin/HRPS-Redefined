@@ -36,9 +36,9 @@ public class ReservationManager extends EntityManager implements PrintSingleObje
 			}
 		}
 	}
-	public void add(int guestId, int roomId, boolean walkIn) {
+	public void add(String guestName, String roomNumber, boolean walkIn) {
 		LocalDate checkInDate = null;
-		if (walkIn ) {
+		if (walkIn) {
 			checkInDate = LocalDate.now();
 		}
 		else {
@@ -56,7 +56,19 @@ public class ReservationManager extends EntityManager implements PrintSingleObje
 				}
 			}
 		}
-		System.out.println("this ran. ReservationManager");
+		System.out.print("Enter the number of adults checking in: ");
+		int noOfAdults = 0;
+		noOfAdults = validateChoice(noOfAdults, "Enter the number of adults checking in: ");
+		
+		System.out.print("Enter the number of childrens checking in: ");
+		int noOfChildren = 0;
+		noOfChildren = validateChoice(noOfChildren, "Enter the number of childrens checking in: ");
+		
+		Reservation r = new Reservation(getCounter(), guestName, roomNumber, checkInDate, noOfAdults, noOfChildren, walkIn);
+		reservationList.add(r);
+		setCounter(getCounter() + 1);
+		writeToFile(reservationList, Reservation.class);
+		System.out.println("Reservation has been added");
 	}
 	@Override
 	public void printSingle() {
@@ -65,7 +77,33 @@ public class ReservationManager extends EntityManager implements PrintSingleObje
 	}
 	@Override
 	public void printAll() {
-		// TODO Auto-generated method stub
+		for (Reservation r : reservationList) {
+			if (r.getStatus().equals(Reservation.ResStatus.CHECKED_OUT))
+				System.out.printf("Name: %s, Room Number: %s, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d\n", r.getGuestName(), r.getRoomName(), r.getCheckInDate().toString(), r.getCheckOutDate().toString(), r.getNoOfAdults(), r.getNoOfChildren());
+			else
+				System.out.printf("Name: %s, Room Number: %s, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d\n", r.getGuestName(), r.getRoomName(), r.getCheckInDate().toString(), "NIL", r.getNoOfAdults(), r.getNoOfChildren());
+
+		}
+	}
+	/*
+	 * This method is used to ensure that user enters an integer
+	 */
+	private int validateChoice(int choice, String inputText) {
+		boolean valid = false;
 		
+		while (!valid) {
+			if (!sc.hasNextInt()) {
+				System.out.println("Invalid Input. Please enter an integer");
+				sc.nextLine();	// clear the input in the buffer
+				System.out.print(inputText);
+			}
+			else {
+				valid = true;
+				choice = sc.nextInt();
+				sc.nextLine();	// clear the "\n" in the buffer
+			}
+		}
+		
+		return choice;
 	}
 }

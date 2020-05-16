@@ -51,8 +51,14 @@ public class ReceptionistHRPSApp {
 				do {
 					reservationMenu();
 					option2 = intInputChecker(option2, sc);
-					reservationOption(option2, guestMgr, roomMgr, reservationMgr, sc);
+					reservationOption(option2, guestMgr, roomMgr, reservationMgr);
 				} while (option2 != 0);
+				break;
+			case 4:
+				String guestName = guestMgr.selectObject();
+				String roomNumber = roomMgr.selectObject(true);
+				
+				reservationMgr.add(guestName, roomNumber, true);
 				break;
 			default:
 				System.out.println("Invalild choice");
@@ -75,6 +81,7 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 1. Guest Options                                    |");
 		System.out.println("| 2. Room Options                                     |");
 		System.out.println("| 3. Reservation Options                              |");
+		System.out.println("| 4. Walk-In                                          |");
 		System.out.println("+-----------------------------------------------------+");
 		System.out.print("Enter choice: ");
 	}
@@ -181,32 +188,19 @@ public class ReceptionistHRPSApp {
 		}
 	}
 	
-	private static void reservationOption(int option, GuestManager guestMgr, RoomManager roomMgr, ReservationManager reservationMgr, Scanner sc) {
+	private static void reservationOption(int option, GuestManager guestMgr, RoomManager roomMgr, ReservationManager reservationMgr) {
 		switch (option) {
 			case 0:
 				System.out.println("Going back...");
 				break;
 			case 1:
-				boolean walkIn = false;
-				int choice = -1;
+				String guestName = guestMgr.selectObject();
+				String roomNumber = roomMgr.selectObject(false);
 				
-				while (choice == -1 || (choice != 1 && choice != 2)) {
-					System.out.println("Press 1 for walk-in, 2 for reservation");
-					System.out.print("Enter choice: ");
-					choice = intInputChecker(choice, sc);
-					if (choice != 1 && choice != 2) {
-						System.out.println("Invalid integer");
-					}
-				}
-				if (choice == 1) {
-					walkIn = true;
-				}
-				
-				int guestId = guestMgr.selectObject();
-				int roomId = roomMgr.selectObject(walkIn);
-				
-				
-				reservationMgr.add(guestId, roomId, walkIn);
+				reservationMgr.add(guestName, roomNumber, false);
+				break;
+			case 5:
+				reservationMgr.printAll();
 				break;
 			default:
 				System.out.println("Invalid option");
