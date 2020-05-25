@@ -134,12 +134,17 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 			if (rLevel > 1 && rLevel < 5) {
 				System.out.print("Enter room number: ");
 				rNumber = validateChoice(rNumber, "Enter room number: ");
-				r = validateRoomNumber(rLevel, rNumber);
-				if (Objects.equals(r, null)) {
-					valid = true;
+				if (rNumber < 1) {
+					System.out.println("Invalid room number");
 				}
 				else {
-					System.out.println("Invalid room number");
+					r = validateRoomNumber(rLevel, rNumber);
+					if (Objects.equals(r, null)) {
+						valid = true;
+					}
+					else {
+						System.out.println("Invalid room number");
+					}
 				}
 			}
 			else {
@@ -165,7 +170,73 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 	}
 	@Override
 	public void modify() {
-		// TODO Auto-generated method stub
+		Room room = searchRoom();
+		if (Objects.equals(room, null)) {
+			System.out.println("Invalid Room");
+			return;
+		}
+		
+		int option = -1;
+		do {
+			System.out.println("\n+------------------------------+");
+			System.out.println("| What you you like to modify? |");
+			System.out.println("+------------------------------+");
+			System.out.println("| 0. Nothing                   |");
+			System.out.println("| 1. Bed Type                  |");
+			System.out.println("| 2. Availability Status       |");
+			System.out.println("| 3. Wifi Enabled?             |");
+			System.out.println("| 4. Smoking Allowed?          |");
+			System.out.println("| 5. Facing                    |");
+			System.out.println("| 6. Rate                      |");
+			System.out.println("+------------------------------+");
+			System.out.print("Enter choice: ");
+			option = validateChoice(option, "Enter choice: ");
+			
+			switch(option) {
+			case 0:
+				System.out.println("Going back...");
+				writeToFile(roomList, Room.class);
+				break;
+			case 1:
+				room.setBedType(selectBedType());
+				System.out.println("Bed type changed");
+				break;
+			case 2:
+				if (room.getAvailabilityStatus() == Room.AvailabilityStatus.OCCUPIED) {
+					System.out.println("Unable to change room. Room is currently occupied");
+				}
+				else {
+					room.setAvailabilityStatus(selectAvailStatus());
+					System.out.println("Availability status changed");
+				}
+				break;
+			case 3:
+				room.setWifiEnabled(selectWifiOption());
+				System.out.println("Wifi enabled changed");
+				break;
+			case 4:
+				room.setSmokingAllowed(selectSmokingOption());
+				System.out.println("Smoking allowed changed");
+				break;
+			case 5:
+				System.out.print("Facing: ");
+				room.setFacing(sc.nextLine());
+				System.out.println("Facing changed");
+				break;
+			case 6:
+				double rate = 0;
+				while (rate < 1) {
+					System.out.print("Enter rate: ");
+					rate = validateRate(rate, "Enter rate: ");
+				}
+				room.setRate(rate);
+				System.out.println("Rate changed");
+				break;
+			default:
+				System.out.println("Invalid choice");
+				break;
+		}
+		} while (option != 0);
 		
 	}
 	@Override
@@ -216,6 +287,7 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 			}
 		} while (choice != 1 && choice != 2);
 	}
+	
 	/*
 	 * This method contains the menu for updating room type
 	 */
@@ -507,5 +579,47 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 			}
 			System.out.println("");
 		}
+	}
+
+	private Room searchRoom() {
+		Room r = null;
+		System.out.print("Enter room number: ");
+		String roomNo = sc.nextLine();
+		String[] parts = roomNo.split("-");
+		if (parts.length == 2) {
+			try {
+				r = validateRoomNumber(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+			}
+			catch (java.lang.NumberFormatException e) {
+				System.out.println("Invalid String");
+				System.out.println(e.getMessage());
+			}
+			catch (java.lang.NullPointerException e) {
+				System.out.println("Invalid room");
+				System.out.println(e.getMessage());
+			}
+		}
+		else {
+			System.out.println("Invalid String");
+		}
+		return r;
+	}
+	private double validateRate(double choice, String inputText) {
+		boolean valid = false;
+		
+		while (!valid) {
+			if (!sc.hasNextDouble()) {
+				System.out.println("Invalid Input. Please enter an floating point value");
+				sc.nextLine();	// clear the input in the buffer
+				System.out.print(inputText);
+			}
+			else {
+				valid = true;
+				choice = sc.nextDouble();
+				sc.nextLine();	// clear the "\n" in the buffer
+			}
+		}
+		
+		return choice;
 	}
 }

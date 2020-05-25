@@ -58,11 +58,19 @@ public class ReservationManager extends EntityManager implements PrintSingleObje
 		}
 		System.out.print("Enter the number of adults checking in: ");
 		int noOfAdults = 0;
-		noOfAdults = validateChoice(noOfAdults, "Enter the number of adults checking in: ");
+		while (noOfAdults < 1) {
+			noOfAdults = validateChoice(noOfAdults, "Enter the number of adults checking in: ");
+			if (noOfAdults < 1)
+				System.out.println("Value should not be less than 1");
+		}
 		
 		System.out.print("Enter the number of childrens checking in: ");
-		int noOfChildren = 0;
-		noOfChildren = validateChoice(noOfChildren, "Enter the number of childrens checking in: ");
+		int noOfChildren = -1;
+		while (noOfChildren < 0) {
+			noOfChildren = validateChoice(noOfChildren, "Enter the number of childrens checking in: ");
+			if (noOfChildren < 0)
+				System.out.println("Value should not be less than 0");
+		}
 		
 		Reservation r = new Reservation(getCounter(), guestName, roomNumber, checkInDate, noOfAdults, noOfChildren, walkIn);
 		reservationList.add(r);

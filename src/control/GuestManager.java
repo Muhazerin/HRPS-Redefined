@@ -157,9 +157,53 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 			}
 			return;
 		}
+		Guest g =  tempList.get(0);
 		
-		System.out.println("Modify algorithm not done yet");
-		// Modify algorithm
+		int option = -1;
+		do {
+			System.out.println("\n+------------------------------+");
+			System.out.println("| What you you like to modify? |");
+			System.out.println("+------------------------------+");
+			System.out.println("| 0. Nothing                   |");
+			System.out.println("| 1. NRIC                      |");
+			System.out.println("| 2. Name                      |");
+			System.out.println("| 3. Gender                    |");
+			System.out.println("| 4. Nationality               |");
+			System.out.println("+------------------------------+");
+			System.out.print("Enter choice: ");
+			option = validateChoice(option, "Enter choice: ");
+			
+			switch(option) {
+				case 0:
+					System.out.println("Going back...");
+					writeToFile(guestList, Guest.class);
+					break;
+				case 1:
+					System.out.print("Enter new NRIC: ");
+					g.setNRIC(sc.nextLine());
+					System.out.println("NRIC changed");
+					break;
+				case 2:
+					System.out.print("Enter new name: ");
+					g.setName(sc.nextLine());
+					System.out.println("Name changed");
+					break;
+				case 3:
+					System.out.print("Enter new gender: ");
+					g.setGender(sc.nextLine());
+					System.out.println("Gender changed");
+					break;
+				case 4:
+					System.out.print("Enter new nationality: ");
+					g.setNationality(sc.nextLine());
+					System.out.println("Nationality changed");
+					break;
+				default:
+					System.out.println("Invalid choice");
+					break;
+			}
+			
+		} while (option != 0);
 		
 	}
 	@Override
@@ -206,5 +250,23 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 			}
 		}
 		return tempGuest;
+	}
+	private int validateChoice(int choice, String inputText) {
+		boolean valid = false;
+		
+		while (!valid) {
+			if (!sc.hasNextInt()) {
+				System.out.println("Invalid Input. Please enter an integer");
+				sc.nextLine();	// clear the input in the buffer
+				System.out.print(inputText);
+			}
+			else {
+				valid = true;
+				choice = sc.nextInt();
+				sc.nextLine();	// clear the "\n" in the buffer
+			}
+		}
+		
+		return choice;
 	}
 }
