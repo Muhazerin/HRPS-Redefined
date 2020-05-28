@@ -12,11 +12,11 @@ import java.io.Serializable;
 
 public class Reservation extends Entity implements Serializable{
 	public static enum ResStatus {
-		CONFIRMED, IN_WAITLIST, CHECKED_IN, EXPIRED, CHECKED_OUT;
+		CONFIRMED, IN_WAITLIST, CHECKED_IN, EXPIRED, CHECKED_OUT, CANCELLED;
 	}
 	private static final long serialVersionUID = 1L;
-	private String guestName;
-	private String roomNumber;
+	private Guest guest;
+	private Room room;
 	private LocalDate checkInDate;
 	private LocalDate checkOutDate;
 	private int noOfAdults;
@@ -24,10 +24,10 @@ public class Reservation extends Entity implements Serializable{
 	private ResStatus resStatus;
 	//private ArrayList<RoomService> roomServiceList;
 	
-	public Reservation(int id, String guestName, String roomNumber, LocalDate checkInDate, int noOfAdults, int noOfChildren, boolean walkIn) {
+	public Reservation(int id, Guest guest, Room room, LocalDate checkInDate, int noOfAdults, int noOfChildren, boolean walkIn) {
 		super(id);
-		this.guestName = guestName;
-		this.roomNumber = roomNumber;
+		this.guest = guest;
+		this.room = room;
 		this.checkInDate = checkInDate;
 		this.checkOutDate = null;
 		this.noOfAdults = noOfAdults;
@@ -37,17 +37,17 @@ public class Reservation extends Entity implements Serializable{
 		else
 			resStatus = ResStatus.CONFIRMED;
 	}
-	public String getGuestName() {
-		return guestName;
+	public Guest getGuest() {
+		return guest;
 	}
-	public void setGuestName(String guestName) {
-		this.guestName = guestName;
+	public void setGuest(Guest guest) {
+		this.guest = guest;
 	}
-	public String getRoomName() {
-		return roomNumber;
+	public Room getRoom() {
+		return room;
 	}
-	public void setRoom(String roomNumber) {
-		this.roomNumber = roomNumber;
+	public void setRoom(Room room) {
+		this.room = room;
 	}
 	public LocalDate getCheckInDate() {
 		return checkInDate;

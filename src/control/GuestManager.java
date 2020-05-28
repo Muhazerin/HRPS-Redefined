@@ -3,6 +3,7 @@ package control;
 import entity.Guest;
 import interfaces.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Scanner;
  *
  */
 
-public class GuestManager extends EntityManager implements ModifyObject, PrintSingleObject, PrintAllObjects{	
+public class GuestManager extends EntityManager implements SelectGuest, ModifyObject, PrintSingleObject, PrintAllObjects{	
 	private ArrayList<Guest> guestList;
 	private Scanner sc;
 	
@@ -33,12 +34,14 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 		}
 		this.setCounter(guestList.size() + 1);
 	}
-	public String selectObject() {
-		String guestName = "";
+	
+	@Override
+	public Guest selectGuest() {
+		Guest guest = null;
 		if (guestList.size() == 0) {
 			// guestList is empty
 			add();
-			guestName = guestList.get(guestList.size() - 1).getName();
+			guest = guestList.get(guestList.size() - 1);
 		}
 		else {
 			// there are items in the guestList,
@@ -48,18 +51,18 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 				// Guest exist in the guestList
 				// but must still show info and ask for confirmation
 				System.out.println("Guest found in the guestList");
-				printSingle(tempList.get(0));
+				print(tempList.get(0));
 				String choice = "";
 				do {
 					System.out.print("Is it this guest? (Y/n): ");
 					choice = sc.nextLine();
 					if (choice.equalsIgnoreCase("y")) {
-						guestName = tempList.get(0).getName();
+						guest = tempList.get(0);
 					}
 					else if (choice.equalsIgnoreCase("n")) {
 						System.out.println("Ok. Creating new guest");
 						add();
-						guestName = guestList.get(guestList.size() - 1).getName();
+						guest = guestList.get(guestList.size() - 1);
 					}
 					else {
 						System.out.println("Invalid Choice");
@@ -69,7 +72,7 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 			else if (tempList.size() == 0) {
 				// guest does not exist in the guestList
 				add();
-				guestName = guestList.get(guestList.size() - 1).getName();
+				guest = guestList.get(guestList.size() - 1);
 			}
 			else {
 				// if there is multiple guests found in the guestList,
@@ -78,7 +81,7 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 				// if no, create new guest
 				System.out.println("Multiple guests found in the guestList");
 				for (Guest g : tempList) {
-					printSingle(g);
+					print(g);
 				}
 				String choice = "";
 				do {
@@ -91,19 +94,19 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 							String name = sc.nextLine();
 							for (Guest g : tempList) {
 								if (g.getName().equals(name)) {
-									guestName = g.getName();
+									guest = g;
 									break;
 								}
 							}
-							if (guestName.equals("")) {
-								System.out.println("Invalid name");
+							if (Objects.equals(guest, null)) {
+								System.out.println("Invalid Name");
 							}
-						} while (guestName.equals(""));
+						} while (Objects.equals(guest, null));
 					}
 					else if (choice.equalsIgnoreCase("n")) {
 						System.out.println("Ok. Creating new guest");
 						add();
-						guestName = guestList.get(guestList.size() - 1).getName();
+						guest = guestList.get(guestList.size() - 1);
 					}
 					else {
 						System.out.println("Invalid Choice");
@@ -111,37 +114,7 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 				} while (!choice.equalsIgnoreCase("y") && !choice.equalsIgnoreCase("n"));
 			}
 		}
-		return guestName;
-	}
-	private void add() {
-		String nric, name, gender, nationality;
-		
-		System.out.print("Enter nric: ");
-		nric = sc.nextLine();
-		
-		if (guestList.size() > 0) {
-			for (Guest g : guestList) {
-				if (g.getNRIC().equalsIgnoreCase(nric)) {
-					System.out.println("Guest found in guest list");
-					System.out.println("Guest is not added");
-					System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getNationality());
-					return;
-				}
-			}
-		}
-		
-		System.out.print("Enter name: ");
-		name = sc.nextLine();
-		System.out.print("Enter gender: ");
-		gender = sc.nextLine();
-		System.out.print("Enter nationality: ");
-		nationality = sc.nextLine();
-		
-		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality);
-		guestList.add(g);
-		this.setCounter(guestList.size() + 1);
-		this.writeToFile(guestList, Guest.class);
-		System.out.println("Guest added");
+		return guest;
 	}
 	@Override
 	public void modify() {
@@ -216,25 +189,56 @@ public class GuestManager extends EntityManager implements ModifyObject, PrintSi
 		if (tempList.size() > 1) {
 			System.out.println("Multiple guest found. Please refine your search query");
 			for (Guest g : tempList) {
-				printSingle(g);
+				System.out.println("Name: " + g.getName());
 			}
 			return;
 		}
-		printSingle(tempList.get(0));
-	}
-	private void printSingle(Guest g) {
-		System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getNationality());
+		print(tempList.get(0));
 	}
 	@Override
 	public void printAll() {
 		if (guestList.size() > 0) {
 			for (Guest g : guestList) {
-				System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getNationality());
+				print(g);
 			}
 		}
 		else {
 			System.out.println("There's no guest in the guest list");
 		}
+	}
+	
+	private void add() {
+		String nric, name, gender, nationality;
+		
+		System.out.print("Enter nric: ");
+		nric = sc.nextLine();
+		
+		if (guestList.size() > 0) {
+			for (Guest g : guestList) {
+				if (g.getNRIC().equalsIgnoreCase(nric)) {
+					System.out.println("Guest found in guest list");
+					System.out.println("Guest is not added");
+					System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getNationality());
+					return;
+				}
+			}
+		}
+		
+		System.out.print("Enter name: ");
+		name = sc.nextLine();
+		System.out.print("Enter gender: ");
+		gender = sc.nextLine();
+		System.out.print("Enter nationality: ");
+		nationality = sc.nextLine();
+		
+		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality);
+		guestList.add(g);
+		this.setCounter(guestList.size() + 1);
+		this.writeToFile(guestList, Guest.class);
+		System.out.println("Guest added");
+	}
+	private void print(Guest g) {
+		System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getNationality());
 	}
 	private ArrayList<Guest> searchGuest() {
 		ArrayList<Guest> tempGuest = new ArrayList<Guest>();

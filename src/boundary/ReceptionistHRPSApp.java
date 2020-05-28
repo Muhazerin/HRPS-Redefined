@@ -7,6 +7,9 @@ import control.GuestManager;
 import control.ReservationManager;
 import control.RoomManager;
 
+import entity.Guest;
+import entity.Room;
+
 public class ReceptionistHRPSApp {
 
 	/**
@@ -20,6 +23,8 @@ public class ReceptionistHRPSApp {
 		GuestManager guestMgr =  new GuestManager(sc, fileIO);
 		RoomManager roomMgr = new RoomManager(sc, fileIO);
 		ReservationManager reservationMgr = new ReservationManager(sc, fileIO);
+		reservationMgr.adjustObject(guestMgr);
+		reservationMgr.adjustObject(roomMgr);
 		
 		int option = -1, option2 = -1;
 		do {
@@ -55,10 +60,10 @@ public class ReceptionistHRPSApp {
 				} while (option2 != 0);
 				break;
 			case 4:
-				String guestName = guestMgr.selectObject();
-				String roomNumber = roomMgr.selectObject(true);
+				Guest guest = guestMgr.selectGuest();
+				Room room = roomMgr.selectRoom(true);
 				
-				reservationMgr.add(guestName, roomNumber, true);
+				reservationMgr.addReservation(guest, room, true);
 				break;
 			default:
 				System.out.println("Invalild choice");
@@ -125,7 +130,7 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 0. Go back                    |");
 		System.out.println("| 1. Create reservation         |");
 		System.out.println("| 2. Update reservation detail  |");
-		System.out.println("| 3. Remove reservation         |");
+		System.out.println("| 3. Cancel a reservation       |");
 		System.out.println("| 4. Print a reservation detail |");
 		System.out.println("| 5. Print all reservation      |");
 		System.out.println("+-------------------------------+");
@@ -171,7 +176,7 @@ public class ReceptionistHRPSApp {
 				System.out.println("Going back...");
 				break;
 			case 1:
-				roomMgr.add();
+				roomMgr.addRoom();
 				break;
 			case 2:
 				roomMgr.modify();
@@ -194,10 +199,18 @@ public class ReceptionistHRPSApp {
 				System.out.println("Going back...");
 				break;
 			case 1:
-				String guestName = guestMgr.selectObject();
-				String roomNumber = roomMgr.selectObject(false);
+				Guest guest = guestMgr.selectGuest();
+				Room room = roomMgr.selectRoom(false);
 				
-				reservationMgr.add(guestName, roomNumber, false);
+				reservationMgr.addReservation(guest, room, false);
+				break;
+			case 2:
+				reservationMgr.modify();
+				break;
+			case 3:
+				break;
+			case 4:
+				reservationMgr.printSingle();
 				break;
 			case 5:
 				reservationMgr.printAll();

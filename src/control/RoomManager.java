@@ -19,7 +19,7 @@ import entity.DeluxeRoom;
  *
  */
 
-public class RoomManager extends EntityManager implements ModifyObject, PrintSingleObject, PrintAllObjects{
+public class RoomManager extends EntityManager implements SelectRoom, AddRoom, ModifyObject, PrintSingleObject, PrintAllObjects{
 	private ArrayList<Room> roomList;
 	private Scanner sc;
 	
@@ -72,10 +72,12 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 		}
 		
 	}
-	public String selectObject(boolean walkIn) {
+	
+	@Override
+	public Room selectRoom(boolean walkIn) {
 		listRoomsByOccupancyRate();
 		boolean valid = false;
-		String roomNumber = "";
+		Room room = null;
 		
 		while (!valid) {
 			System.out.print("Enter room number: ");
@@ -86,7 +88,7 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 					Room r = validateRoomNumber(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
 					if (r.getAvailabilityStatus().equals(Room.AvailabilityStatus.VACANT)) {
 						valid = true;
-						roomNumber = String.format("%d-%d", r.getRoomLevel(), r.getRoomNumber());
+						room = r;
 						if (walkIn) {
 							r.setAvailabilityStatus(Room.AvailabilityStatus.OCCUPIED);
 						}
@@ -111,9 +113,10 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 				System.out.println("Invalid String");
 			}
 		}
-		return roomNumber;
+		return room;
 	}
-	public void add() {
+	@Override
+	public void addRoom() {
 		Room.BedType bt = null;
 		Room.AvailabilityStatus as = null;
 		boolean wifiEnabled = false, smokingAllowed = false, valid = false;
@@ -486,27 +489,6 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 		return room;
 	}
 	/*
-	 * This method is used to ensure that user enters an integer
-	 */
-	private int validateChoice(int choice, String inputText) {
-		boolean valid = false;
-		
-		while (!valid) {
-			if (!sc.hasNextInt()) {
-				System.out.println("Invalid Input. Please enter an integer");
-				sc.nextLine();	// clear the input in the buffer
-				System.out.print(inputText);
-			}
-			else {
-				valid = true;
-				choice = sc.nextInt();
-				sc.nextLine();	// clear the "\n" in the buffer
-			}
-		}
-		
-		return choice;
-	}
-	/*
 	 * This method prints the room details
 	 */
 	private void printRoomDetails(Room r) {
@@ -533,6 +515,27 @@ public class RoomManager extends EntityManager implements ModifyObject, PrintSin
 		else {
 			return "No";
 		}
+	}
+	/*
+	 * This method is used to ensure that user enters an integer
+	 */
+	private int validateChoice(int choice, String inputText) {
+		boolean valid = false;
+		
+		while (!valid) {
+			if (!sc.hasNextInt()) {
+				System.out.println("Invalid Input. Please enter an integer");
+				sc.nextLine();	// clear the input in the buffer
+				System.out.print(inputText);
+			}
+			else {
+				valid = true;
+				choice = sc.nextInt();
+				sc.nextLine();	// clear the "\n" in the buffer
+			}
+		}
+		
+		return choice;
 	}
 	
 	private void listRoomsByOccupancyRate() {
