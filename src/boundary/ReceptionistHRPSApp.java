@@ -1,14 +1,20 @@
 package boundary;
 
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 import control.FileIO;
 import control.GuestManager;
+import control.MenuItemManager;
 import control.ReservationManager;
 import control.RoomManager;
 
 import entity.Guest;
 import entity.Room;
+import entity.Reservation;
+import entity.MenuItem;
+import entity.RoomService;
 
 public class ReceptionistHRPSApp {
 
@@ -22,6 +28,7 @@ public class ReceptionistHRPSApp {
 		FileIO fileIO = new FileIO();
 		GuestManager guestMgr =  new GuestManager(sc, fileIO);
 		RoomManager roomMgr = new RoomManager(sc, fileIO);
+		MenuItemManager menuItemMgr = new MenuItemManager(sc, fileIO);
 		ReservationManager reservationMgr = new ReservationManager(sc, fileIO);
 		reservationMgr.adjustObject(guestMgr);
 		reservationMgr.adjustObject(roomMgr);
@@ -56,14 +63,22 @@ public class ReceptionistHRPSApp {
 				do {
 					reservationMenu();
 					option2 = intInputChecker(option2, sc);
-					reservationOption(option2, guestMgr, roomMgr, reservationMgr);
+					reservationOption(option2, guestMgr, roomMgr, reservationMgr, menuItemMgr);
 				} while (option2 != 0);
 				break;
 			case 4:
-				Guest guest = guestMgr.selectGuest();
+				Guest guest = (Guest) guestMgr.selectObject();
 				Room room = roomMgr.selectRoom(true);
 				
 				reservationMgr.addReservation(guest, room, true);
+				break;
+			case 5:
+				option2 = -1;
+				do {
+					menuItemMenu();
+					option2 = intInputChecker(option2, sc);
+					menuItemOption(option2, menuItemMgr);
+				} while (option2 != 0);
 				break;
 			default:
 				System.out.println("Invalild choice");
@@ -86,7 +101,8 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 1. Guest Options                                    |");
 		System.out.println("| 2. Room Options                                     |");
 		System.out.println("| 3. Reservation Options                              |");
-		System.out.println("| 4. Walk-In                                          |");
+		System.out.println("| 4. Guest Walk-In                                    |");
+		System.out.println("| 5. Menu Items Options                               |");
 		System.out.println("+-----------------------------------------------------+");
 		System.out.print("Enter choice: ");
 	}
@@ -133,6 +149,23 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 3. Cancel a reservation       |");
 		System.out.println("| 4. Print a reservation detail |");
 		System.out.println("| 5. Print all reservation      |");
+		System.out.println("| 6. Add room service           |");
+		System.out.println("| 7. Print room services        |");
+		System.out.println("+-------------------------------+");
+		System.out.print("Enter choice: ");
+	}
+	
+	/* 
+	 * This method contains the menu for menuItemOption
+	 */
+	private static void menuItemMenu() {
+		System.out.println("\n+-------------------------------+");
+		System.out.println("| What would you like to do ?   |");
+		System.out.println("| 0. Go back                    |");
+		System.out.println("| 1. Add menu item              |");
+		System.out.println("| 2. Modify menu item           |");
+		System.out.println("| 3. Remove menu item           |");
+		System.out.println("| 4. Print all menu items       |");
 		System.out.println("+-------------------------------+");
 		System.out.print("Enter choice: ");
 	}
@@ -176,7 +209,7 @@ public class ReceptionistHRPSApp {
 				System.out.println("Going back...");
 				break;
 			case 1:
-				roomMgr.addRoom();
+				roomMgr.addObject();
 				break;
 			case 2:
 				roomMgr.modify();
@@ -193,13 +226,13 @@ public class ReceptionistHRPSApp {
 		}
 	}
 	
-	private static void reservationOption(int option, GuestManager guestMgr, RoomManager roomMgr, ReservationManager reservationMgr) {
+	private static void reservationOption(int option, GuestManager guestMgr, RoomManager roomMgr, ReservationManager reservationMgr, MenuItemManager menuUtemMgr) {
 		switch (option) {
 			case 0:
 				System.out.println("Going back...");
 				break;
 			case 1:
-				Guest guest = guestMgr.selectGuest();
+				Guest guest = (Guest) guestMgr.selectObject();
 				Room room = roomMgr.selectRoom(false);
 				
 				reservationMgr.addReservation(guest, room, false);
@@ -215,10 +248,50 @@ public class ReceptionistHRPSApp {
 			case 5:
 				reservationMgr.printAll();
 				break;
+			case 6:
+				Reservation reservation = (Reservation) reservationMgr.selectObject();
+				if (!Objects.equals(reservation, null) ) {
+					ArrayList<MenuItem> menuItemList = menuUtemMgr.selectMenuItems();
+					if (menuItemList.size() == 0) {
+						System.out.println("Room service is not added");
+					}
+					else {
+						RoomService roomService = new RoomService(menuItemList);
+						reservationMgr.addRoomService(reservation, roomService);
+						System.out.println("Room service is added");
+					}
+				}
+				break;
+			case 7:
+				reservationMgr.printRoomServices();
+				break;
 			default:
 				System.out.println("Invalid option");
 				break;
 		}
+	}
+	
+	private static void menuItemOption(int option, MenuItemManager menuItemMgr) {
+		switch (option) {
+		case 0:
+			System.out.println("Going back...");
+			break;
+		case 1:
+			menuItemMgr.addObject();
+			break;
+		case 2:
+			menuItemMgr.modify();
+			break;
+		case 3:
+			menuItemMgr.removeObject();
+			break;
+		case 4:
+			menuItemMgr.printAll();
+			break;
+		default:
+			System.out.println("Invalid option");
+			break;
+	}
 	}
 	
 	/**

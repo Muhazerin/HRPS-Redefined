@@ -12,7 +12,7 @@ import java.util.Scanner;
  *
  */
 
-public class GuestManager extends EntityManager implements SelectGuest, ModifyObject, PrintSingleObject, PrintAllObjects{	
+public class GuestManager extends EntityManager implements SelectObject, ModifyObject, PrintSingleObject, PrintAllObjects{	
 	private ArrayList<Guest> guestList;
 	private Scanner sc;
 	
@@ -36,7 +36,7 @@ public class GuestManager extends EntityManager implements SelectGuest, ModifyOb
 	}
 	
 	@Override
-	public Guest selectGuest() {
+	public Object selectObject() {
 		Guest guest = null;
 		if (guestList.size() == 0) {
 			// guestList is empty

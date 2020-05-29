@@ -10,7 +10,9 @@ import java.util.Scanner;
 
 import entity.Reservation;
 import entity.Room;
+import entity.RoomService;
 import entity.Guest;
+import entity.MenuItem;
 
 /**
  * 
@@ -18,7 +20,7 @@ import entity.Guest;
  *
  */
 
-public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject{
+public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject, SelectObject, AddRoomService, PrintRoomServices{
 	private ArrayList<Reservation> reservationList;
 	private Scanner sc;
 	
@@ -88,7 +90,7 @@ public class ReservationManager extends EntityManager implements AddReservation,
 		ArrayList<Reservation> tempList = searchReservation();
 		if (tempList.size() == 0) {
 			// reservationList is empty or name not found
-			System.out.println("name is not found in the guest list");
+			System.out.println("Name is not found in the reservation list");
 			return;
 		}
 		if (tempList.size() > 1) {
@@ -162,6 +164,10 @@ public class ReservationManager extends EntityManager implements AddReservation,
 	}
 	@Override
 	public void printAll() {
+		if (reservationList.size() == 0) {
+			System.out.println("There are no reservation in the reservation list");
+			return;
+		}
 		for (Reservation r : reservationList) {
 			print(r);
 		}
@@ -189,6 +195,65 @@ public class ReservationManager extends EntityManager implements AddReservation,
 			}
 		}
 	}
+	@Override
+	public Object selectObject() {
+		ArrayList<Reservation> tempList = searchReservation();
+		if (tempList.size() == 0) {
+			// reservationList is empty or name not found
+			System.out.println("Name is not found in the reservation list");
+			return null;
+		}
+		if (tempList.size() > 1) {
+			// multiple guest name found
+			System.out.println("Multiple reservation found. Please refine your search query");
+			for (Reservation r : tempList) {
+				print(r);
+			}
+			return null;
+		}
+		Reservation r = tempList.get(0);
+		return r;
+	}
+	@Override
+	public void addRoomService(Reservation reservation, RoomService roomService) {
+		reservation.addRoomService(roomService);
+		this.writeToFile(reservationList, Reservation.class);
+	}
+	@Override
+	public void printRoomServices() {
+		ArrayList<Reservation> tempList = searchReservation();
+		if (tempList.size() == 0) {
+			// reservationList is empty or name not found
+			System.out.println("Name is not found in the reservation list");
+			return;
+		}
+		if (tempList.size() > 1) {
+			// multiple guest name found
+			System.out.println("Multiple reservation found. Please refine your search query");
+			for (Reservation r : tempList) {
+				print(r);
+			}
+			return;
+		}
+		Reservation reservation = tempList.get(0);
+		
+		if (reservation.getRoomServiceList().size() == 0) {
+			System.out.println("There is no room service ordered yet");
+			return;
+		}
+		int i = 1;
+		for (RoomService roomService : reservation.getRoomServiceList()) {
+			System.out.println("\nRoom Service Order #" + i);
+			i++;
+			
+			System.out.println("Room Service Order Status: " + roomService.getRoomServiceStatus().toString());
+			System.out.println("Ordered Items");
+			System.out.println("-------------");
+			for (MenuItem menuItem : roomService.getRoomService()) {
+				System.out.printf("Name: %s, Description: %s, Price: $%.2f\n", menuItem.getName(), menuItem.getDescription(), menuItem.getPrice());
+			}
+		}
+ 	}
 	
 	/*
 	 * This method is used to ensure that user enters an integer

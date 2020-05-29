@@ -2,7 +2,7 @@ package entity;
 
 import java.time.LocalDate;
 import java.io.Serializable;
-//import java.util.ArrayList;
+import java.util.ArrayList;
 
 /**
  * 
@@ -22,10 +22,11 @@ public class Reservation extends Entity implements Serializable{
 	private int noOfAdults;
 	private int noOfChildren;
 	private ResStatus resStatus;
-	//private ArrayList<RoomService> roomServiceList;
+	private ArrayList<RoomService> roomServiceList;
 	
 	public Reservation(int id, Guest guest, Room room, LocalDate checkInDate, int noOfAdults, int noOfChildren, boolean walkIn) {
 		super(id);
+		roomServiceList = new ArrayList<RoomService>();
 		this.guest = guest;
 		this.room = room;
 		this.checkInDate = checkInDate;
@@ -79,5 +80,13 @@ public class Reservation extends Entity implements Serializable{
 	public void setStatus(ResStatus resStatus) {
 		this.resStatus = resStatus;
 	}
-	
+	public ArrayList<RoomService> getRoomServiceList() {
+		return roomServiceList;
+	}
+	public void setRoomServiceList(ArrayList<RoomService> roomServiceList) {
+		this.roomServiceList = roomServiceList;
+	}
+	public void addRoomService(RoomService roomService) {
+		roomServiceList.add(roomService);
+	}
 }

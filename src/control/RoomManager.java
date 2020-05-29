@@ -19,7 +19,7 @@ import entity.DeluxeRoom;
  *
  */
 
-public class RoomManager extends EntityManager implements SelectRoom, AddRoom, ModifyObject, PrintSingleObject, PrintAllObjects{
+public class RoomManager extends EntityManager implements SelectRoom, AddObject, ModifyObject, PrintSingleObject, PrintAllObjects{
 	private ArrayList<Room> roomList;
 	private Scanner sc;
 	
@@ -116,7 +116,7 @@ public class RoomManager extends EntityManager implements SelectRoom, AddRoom, M
 		return room;
 	}
 	@Override
-	public void addRoom() {
+	public void addObject() {
 		Room.BedType bt = null;
 		Room.AvailabilityStatus as = null;
 		boolean wifiEnabled = false, smokingAllowed = false, valid = false;
