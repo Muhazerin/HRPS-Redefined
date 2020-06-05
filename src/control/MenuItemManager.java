@@ -16,7 +16,6 @@ public class MenuItemManager extends EntityManager implements AddObject, SelectM
 	private ArrayList<MenuItem> menuItemList;
 	private Scanner sc;
 	
-	
 	public MenuItemManager(Scanner sc, DataAccess dataAccess) {
 		super(MenuItem.class, dataAccess);
 		

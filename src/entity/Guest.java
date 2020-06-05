@@ -15,13 +15,19 @@ public class Guest extends Entity implements Serializable{
 	private String name;
 	private String gender;
 	private String nationality;
+	private String address;
+	private String country;
+	private CreditCard creditCard;
 	
-	public Guest(int id, String nric, String name, String gender, String nationality) {
+	public Guest(int id, String nric, String name, String gender, String nationality, String address, String country, String cName, String cAddress, String cCountry, String cExp, long cCardNo, int cCvv, CreditCard.CardType cCardType) {
 		super(id);
 		this.nric = nric;
 		this.name = name;
 		this.gender = gender;
 		this.nationality = nationality;
+		this.address = address;
+		this.country = country;
+		this.creditCard = new CreditCard(cName, cAddress, cCountry, cExp, cCardNo, cCvv, cCardType);
 	}
 	public String getNRIC() {
 		return nric;
@@ -46,5 +52,23 @@ public class Guest extends Entity implements Serializable{
 	}
 	public void setNationality(String nationality) {
 		this.nationality = nationality;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public CreditCard getCreditCard() {
+		return creditCard;
+	}
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
 	}
 }

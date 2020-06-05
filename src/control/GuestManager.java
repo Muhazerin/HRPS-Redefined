@@ -1,8 +1,10 @@
 package control;
 
+import entity.CreditCard;
 import entity.Guest;
 import interfaces.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -208,8 +210,13 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 	}
 	
 	private void add() {
-		String nric, name, gender, nationality;
+		String nric, name, gender, nationality, address, country;
+		String cName, cAddress, cCountry, cExp, option;
+		long cCardNo = 0;
+		int cCvv = 0;
+		CreditCard.CardType cCardType = null;
 		
+		// Add Guest Details
 		System.out.print("Enter nric: ");
 		nric = sc.nextLine();
 		
@@ -228,17 +235,87 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 		name = sc.nextLine();
 		System.out.print("Enter gender: ");
 		gender = sc.nextLine();
+		System.out.print("Enter country: ");
+		country = sc.nextLine();
 		System.out.print("Enter nationality: ");
 		nationality = sc.nextLine();
+		System.out.print("Enter address: ");
+		address = sc.nextLine();
 		
-		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality);
+		// Add Credit Card Details
+		cName = cAddress = cCountry = cExp = option = "";
+		while (option == "") {
+			System.out.print("Use the same name, country, and address for Credit Card? (Y/n): ");
+			option = sc.nextLine();
+			if (option.equalsIgnoreCase("y") || option.equalsIgnoreCase("n")) {
+				if (option.equalsIgnoreCase("y")) {
+					cName = name;
+					cAddress = address;
+					cCountry = country;
+				}
+				else {
+					System.out.print("Enter name: ");
+					cName = sc.nextLine();
+					System.out.print("Enter country: ");
+					cCountry = sc.nextLine();
+					System.out.print("Enter address: ");
+					cAddress = sc.nextLine();
+				}
+				cCardType = getCardType();
+				while (cCardNo == 0) {
+					try {
+						System.out.print("Enter card number: ");
+						cCardNo = sc.nextLong();
+						sc.nextLine();	// clear the "\n" in the buffer
+					}
+					catch (InputMismatchException e) {
+						System.out.println("Invalid input. Please enter an integer");
+						cCardNo = 0;
+						sc.nextLine();	// clear the input in the buffer
+					}
+					catch (Exception e) {
+						System.out.println("Error!! Error message: " + e.getMessage());
+						cCardNo = 0;
+						sc.nextLine();	// clear the input in the buffer
+					}
+				}
+				
+				System.out.print("Enter exp (mm/yy): ");
+				cExp = validateExp(cExp, "Enter exp (mm/yy): ");
+				
+				while (cCvv == 0) {
+					try {
+						System.out.print("Enter cvv: ");
+						cCvv = sc.nextInt();
+						sc.nextLine();	// clear the "\n" in the buffer
+					}
+					catch (InputMismatchException e) {
+						System.out.println("Invalid input. Please enter an integer");
+						cCvv = 0;
+						sc.nextLine();	// clear the input in the buffer
+					}
+					catch (Exception e) {
+						System.out.println("Error!! Error message: " + e.getMessage());
+						cCvv = 0;
+						sc.nextLine();	// clear the input in the buffer
+					}
+				}
+				
+			}
+			else {
+				option = "";
+				System.out.println("Invalid input. Please enter Y/n");
+			}
+		}
+		
+		Guest g = new Guest(this.getCounter(), nric, name, gender, nationality, address, country, cName, cAddress, cCountry, cExp, cCardNo, cCvv, cCardType);
 		guestList.add(g);
 		this.setCounter(guestList.size() + 1);
 		this.writeToFile(guestList, Guest.class);
 		System.out.println("Guest added");
 	}
 	private void print(Guest g) {
-		System.out.printf("NRIC: %s, Name: %s, Gender: %s, Nationality: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getNationality());
+		System.out.printf("NRIC: %s, Name: %s, Gender: %s, Country: %s, Nationality: %s, Address: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getCountry(), g.getNationality(), g.getAddress());
 	}
 	private ArrayList<Guest> searchGuest() {
 		ArrayList<Guest> tempGuest = new ArrayList<Guest>();
@@ -272,5 +349,67 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 		}
 		
 		return choice;
+	}
+	private CreditCard.CardType getCardType() {
+		int choice = -1;
+		CreditCard.CardType cardType = null;
+		
+		do {
+			System.out.println("\n+-------------------+");
+			System.out.println("| Select card type: |");
+			System.out.println("| 1. Mastercard     |");
+			System.out.println("| 2. Visa           |");
+			System.out.println("+-------------------+");
+			System.out.print("Enter choice: ");
+			choice = validateChoice(choice, "Enter choice: ");
+			switch (choice) {
+				case 1:
+					cardType = CreditCard.CardType.MASTER;
+					break;
+				case 2:
+					cardType = CreditCard.CardType.VISA;
+					break;
+				default:
+					System.out.println("Invalid Choice");
+					break;
+			}
+		} while (choice != 1 && choice != 2);
+		return cardType;
+	}
+	private String validateExp(String exp, String inputText) {
+		boolean valid = false, isNum1 = false, isNum2 = false;
+		
+		while (!valid) {
+			exp = sc.nextLine();
+			if (!exp.contains("/")) {
+				System.out.println("Invalid expiry date. Please enter an expiry date");
+				System.out.print(inputText);
+			}
+			else {
+				String[] parts = exp.split("/");
+				if (parts.length == 2) {
+					isNum1 = isInteger(parts[0]);
+					isNum2 = isInteger(parts[1]);
+				}
+				if (!isNum1 || !isNum2) {
+					System.out.println("Invalid expiry date. Please enter an expiry date");
+					System.out.print(inputText);
+				}
+				else {
+					valid = true;
+				}
+			}
+		}
+		
+		return exp;
+	}
+	private boolean isInteger(String input) {
+		try {
+			Integer.parseInt(input);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 }
