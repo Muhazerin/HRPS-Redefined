@@ -135,6 +135,7 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 		Guest g =  tempList.get(0);
 		
 		int option = -1;
+		String answer = "";
 		do {
 			System.out.println("\n+------------------------------+");
 			System.out.println("| What you you like to modify? |");
@@ -144,6 +145,9 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 			System.out.println("| 2. Name                      |");
 			System.out.println("| 3. Gender                    |");
 			System.out.println("| 4. Nationality               |");
+			System.out.println("| 5. Country                   |");
+			System.out.println("| 6. Address                   |");
+			System.out.println("| 7. Credit Card               |");
 			System.out.println("+------------------------------+");
 			System.out.print("Enter choice: ");
 			option = validateChoice(option, "Enter choice: ");
@@ -160,8 +164,24 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 					break;
 				case 2:
 					System.out.print("Enter new name: ");
-					g.setName(sc.nextLine());
+					String name = sc.nextLine();
+					g.setName(name);
 					System.out.println("Name changed");
+					answer = "";
+					while (answer == "") {
+						System.out.print("Change guest's credit card name with new name (Y/n): ");
+						answer = sc.nextLine();
+						if (answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n")) {
+							if (answer.equalsIgnoreCase("y")) {
+								g.getCreditCard().setName(name);
+								System.out.println("Credit Card Name changed");
+							}
+						}
+						else {
+							answer = "";
+							System.out.println("Invalid input. Please enter Y/n");
+						}
+					}
 					break;
 				case 3:
 					System.out.print("Enter new gender: ");
@@ -172,6 +192,51 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 					System.out.print("Enter new nationality: ");
 					g.setNationality(sc.nextLine());
 					System.out.println("Nationality changed");
+					break;
+				case 5:
+					System.out.print("Enter new country: ");
+					String country = sc.nextLine();
+					g.setCountry(country);
+					System.out.println("Country changed");
+					answer = "";
+					while (answer == "") {
+						System.out.print("Change guest's credit card country with new name (Y/n): ");
+						answer = sc.nextLine();
+						if (answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n")) {
+							if (answer.equalsIgnoreCase("y")) {
+								g.getCreditCard().setName(country);
+								System.out.println("Credit Card Country changed");
+							}
+						}
+						else {
+							answer = "";
+							System.out.println("Invalid input. Please enter Y/n");
+						}
+					}
+					break;
+				case 6:
+					System.out.print("Enter new address: ");
+					String address = sc.nextLine();
+					g.setAddress(address);
+					System.out.println("Address changed");
+					answer = "";
+					while (answer == "") {
+						System.out.print("Change guest's credit card address with new name (Y/n): ");
+						answer = sc.nextLine();
+						if (answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n")) {
+							if (answer.equalsIgnoreCase("y")) {
+								g.getCreditCard().setName(address);
+								System.out.println("Credit Card Address changed");
+							}
+						}
+						else {
+							answer = "";
+							System.out.println("Invalid input. Please enter Y/n");
+						}
+					}
+					break;
+				case 7:
+					modifyCreditCard(g);
 					break;
 				default:
 					System.out.println("Invalid choice");
@@ -316,6 +381,8 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 	}
 	private void print(Guest g) {
 		System.out.printf("NRIC: %s, Name: %s, Gender: %s, Country: %s, Nationality: %s, Address: %s\n", g.getNRIC(), g.getName(), g.getGender(), g.getCountry(), g.getNationality(), g.getAddress());
+		System.out.println("Credit Card Details: ");
+		System.out.printf("Card Type: %s, Name: %s, Country: %s, Address: %s, Card No: %d, Exp: %s, CVV: %d\n", g.getCreditCard().getCardType().toString(), g.getCreditCard().getName(), g.getCreditCard().getCountry(), g.getCreditCard().getAddress(), g.getCreditCard().getCardNo(), g.getCreditCard().getExp(), g.getCreditCard().getCvv());
 	}
 	private ArrayList<Guest> searchGuest() {
 		ArrayList<Guest> tempGuest = new ArrayList<Guest>();
@@ -411,5 +478,152 @@ public class GuestManager extends EntityManager implements SelectObject, ModifyO
 		catch (Exception e) {
 			return false;
 		}
+	}
+	private void modifyCreditCard(Guest guest) {
+		int option = -1;
+		String answer = "";
+		
+		do {
+			System.out.println("\n+------------------------------+");
+			System.out.println("| What you you like to modify? |");
+			System.out.println("+------------------------------+");
+			System.out.println("| 0. Nothing                   |");
+			System.out.println("| 1. Name                      |");
+			System.out.println("| 2. Address                   |");
+			System.out.println("| 3. Country                   |");
+			System.out.println("| 4. Expiry Date               |");
+			System.out.println("| 5. Card Number               |");
+			System.out.println("| 6. CVV                       |");
+			System.out.println("| 7. Card Type                 |");
+			System.out.println("+------------------------------+");
+			System.out.print("Enter choice: ");
+			option = validateChoice(option, "Enter choice: ");
+			
+			switch (option) {
+				case 1:
+					System.out.print("Enter new name: ");
+					String name = sc.nextLine();
+					guest.getCreditCard().setName(name);
+					System.out.println("Name changed");
+					answer = "";
+					while (answer == "") {
+						System.out.print("Change guest's name with new name (Y/n): ");
+						answer = sc.nextLine();
+						if (answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n")) {
+							if (answer.equalsIgnoreCase("y")) {
+								guest.setName(name);
+								System.out.println("Guest's name changed");
+							}
+						}
+						else {
+							answer = "";
+							System.out.println("Invalid input. Please enter Y/n");
+						}
+					}
+					break;
+				case 2:
+					System.out.print("Enter new address: ");
+					String address = sc.nextLine();
+					guest.getCreditCard().setAddress(address);
+					System.out.print("Address changed");
+					answer = "";
+					while (answer == "") {
+						System.out.print("Change guest's address with new name (Y/n): ");
+						answer = sc.nextLine();
+						if (answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n")) {
+							if (answer.equalsIgnoreCase("y")) {
+								guest.setName(address);
+								System.out.println("Guest's address changed");
+							}
+						}
+						else {
+							answer = "";
+							System.out.println("Invalid input. Please enter Y/n");
+						}
+					}
+					break;
+				case 3:
+					System.out.print("Enter new country: ");
+					String country = sc.nextLine();
+					guest.getCreditCard().setCountry(country);
+					System.out.println("Country changed");
+					answer = "";
+					while (answer == "") {
+						System.out.print("Change guest's country with new name (Y/n): ");
+						answer = sc.nextLine();
+						if (answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n")) {
+							if (answer.equalsIgnoreCase("y")) {
+								guest.setName(country);
+								System.out.println("Guest's country changed");
+							}
+						}
+						else {
+							answer = "";
+							System.out.println("Invalid input. Please enter Y/n");
+						}
+					}
+					break;
+				case 4:
+					String exp = "";
+					System.out.print("Enter exp (mm/yy): ");
+					exp = validateExp(exp, "Enter exp (mm/yy): ");
+					guest.getCreditCard().setExp(exp);
+					System.out.println("Expiry date changed");
+					break;
+				case 5:
+					long cardNo = 0;
+					while (cardNo == 0) {
+						try {
+							System.out.print("Enter card number: ");
+							cardNo = sc.nextLong();
+							sc.nextLine();	// clear the "\n" in the buffer
+						}
+						catch (InputMismatchException e) {
+							System.out.println("Invalid input. Please enter an integer");
+							cardNo = 0;
+							sc.nextLine();	// clear the input in the buffer
+						}
+						catch (Exception e) {
+							System.out.println("Error!! Error message: " + e.getMessage());
+							cardNo = 0;
+							sc.nextLine();	// clear the input in the buffer
+						}
+					}
+					guest.getCreditCard().setCardNo(cardNo);
+					System.out.println("Card number changed");
+					break;
+				case 6:
+					int cvv = 0;
+					while (cvv == 0) {
+						try {
+							System.out.print("Enter cvv: ");
+							cvv = sc.nextInt();
+							sc.nextLine();	// clear the "\n" in the buffer
+						}
+						catch (InputMismatchException e) {
+							System.out.println("Invalid input. Please enter an integer");
+							cvv = 0;
+							sc.nextLine();	// clear the input in the buffer
+						}
+						catch (Exception e) {
+							System.out.println("Error!! Error message: " + e.getMessage());
+							cvv = 0;
+							sc.nextLine();	// clear the input in the buffer
+						}
+					}
+					guest.getCreditCard().setCvv(cvv);
+					System.out.println("CVV changed");
+					break;
+				case 7:
+					CreditCard.CardType cardType = null;
+					cardType = getCardType();
+					guest.getCreditCard().setCardType(cardType);
+					System.out.println("Card Type changed");
+					break;
+				default:
+					System.out.println("Invalid choice");
+					break;
+			}
+		} while (option != 0);
 	}
 }
