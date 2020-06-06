@@ -3,6 +3,7 @@ package boundary;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 import control.FileIO;
 import control.GuestManager;
@@ -28,8 +29,12 @@ public class ReceptionistHRPSApp {
 		FileIO fileIO = new FileIO();
 		GuestManager guestMgr =  new GuestManager(sc, fileIO);
 		RoomManager roomMgr = new RoomManager(sc, fileIO);
+		
+		// creating a thread pool with size = total number of rooms
+		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(roomMgr.getTotalNumberOfRooms());
+		
 		MenuItemManager menuItemMgr = new MenuItemManager(sc, fileIO);
-		ReservationManager reservationMgr = new ReservationManager(sc, fileIO);
+		ReservationManager reservationMgr = new ReservationManager(sc, fileIO, scheduledExecutorService);
 		reservationMgr.adjustObject(guestMgr);
 		reservationMgr.adjustObject(roomMgr);
 		
@@ -39,6 +44,7 @@ public class ReceptionistHRPSApp {
 			option = intInputChecker(option, sc);
 			switch (option) {
 			case 0:
+				scheduledExecutorService.shutdownNow();
 				System.out.println("Exiting the program...");
 				System.out.println("Bye bye...");
 				break;

@@ -3,10 +3,13 @@ package control;
 import interfaces.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 import entity.Reservation;
 import entity.Room;
@@ -23,17 +26,38 @@ import entity.MenuItem;
 public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject, SelectObject, AddRoomService, PrintRoomServices{
 	private ArrayList<Reservation> reservationList;
 	private Scanner sc;
+	private ScheduledExecutorService scheduledExecutorService;
 	
-	public ReservationManager(Scanner sc, DataAccess dataAccess) {
+	public ReservationManager(Scanner sc, DataAccess dataAccess, ScheduledExecutorService scheduledExecutorService) {
 		super(Reservation.class, dataAccess);
 		
+		this.scheduledExecutorService = scheduledExecutorService;
 		this.sc = sc;
 		reservationList = new ArrayList<Reservation>();
 		Object[] objArray = super.getList();
+		LocalDate now = LocalDate.now();
 		for (Object obj : objArray) {
 			if (obj instanceof Reservation) {
 				Reservation r = (Reservation) obj;
 				reservationList.add(r);
+				if (r.getResStatus() == Reservation.ResStatus.CONFIRMED) {
+					// cancel reservation if now - checkInDate < 0
+					if (now.until(r.getCheckInDate(), ChronoUnit.DAYS) < 0) {
+						r.setResStatus(Reservation.ResStatus.CANCELLED);
+					}
+					else {
+						// schedule a task to auto expire the reservation after 1 day if the guest didnt check in
+						LocalDateTime endTime = r.getCheckInDate().plusDays(1).atStartOfDay();
+						LocalDateTime nowTime = LocalDateTime.now();
+						long seconds = nowTime.until(endTime, ChronoUnit.SECONDS);
+						Runnable task = () -> {
+							if (r.getResStatus() == Reservation.ResStatus.CONFIRMED) {
+								r.setResStatus(Reservation.ResStatus.CANCELLED);
+							}
+						};
+						scheduledExecutorService.schedule(task, seconds, TimeUnit.SECONDS);
+					}
+				}
 			}
 			else {
 				System.out.println("Object is not instance of Reservation");
@@ -45,8 +69,10 @@ public class ReservationManager extends EntityManager implements AddReservation,
 	@Override
 	public void addReservation(Guest guest, Room room, boolean walkIn) {
 		LocalDate checkInDate = null;
+		Reservation.ResStatus resStatus = null;
 		if (walkIn) {
 			checkInDate = LocalDate.now();
+			resStatus = Reservation.ResStatus.CHECKED_IN;
 		}
 		else {
 			boolean valid = false;
@@ -62,6 +88,7 @@ public class ReservationManager extends EntityManager implements AddReservation,
 					System.out.println("Invalid date format");
 				}
 			}
+			resStatus = Reservation.ResStatus.CONFIRMED;
 		}
 		System.out.print("Enter the number of adults checking in: ");
 		int noOfAdults = 0;
@@ -79,10 +106,24 @@ public class ReservationManager extends EntityManager implements AddReservation,
 				System.out.println("Value should not be less than 0");
 		}
 		
-		Reservation r = new Reservation(getCounter(), guest, room, checkInDate, noOfAdults, noOfChildren, walkIn);
+		Reservation r = new Reservation(getCounter(), guest, room, checkInDate, noOfAdults, noOfChildren, resStatus);
 		reservationList.add(r);
 		setCounter(getCounter() + 1);
 		writeToFile(reservationList, Reservation.class);
+		
+		// adding a schedule to cancel resStatus is still CONFIRMED by the end the day after the checkInDate.
+		if (!walkIn) {
+			LocalDateTime endTime = checkInDate.plusDays(1).atStartOfDay();
+			LocalDateTime now = LocalDateTime.now();
+			long seconds = now.until(endTime, ChronoUnit.SECONDS);
+			Runnable task = () -> {
+				if (r.getResStatus() == Reservation.ResStatus.CONFIRMED) {
+					r.setResStatus(Reservation.ResStatus.CANCELLED);
+				}
+			};
+			scheduledExecutorService.schedule(task, seconds, TimeUnit.SECONDS);
+		}
+		
 		System.out.println("Reservation has been added");
 	}
 	@Override
@@ -294,9 +335,9 @@ public class ReservationManager extends EntityManager implements AddReservation,
 		return tempList;
 	}
 	private void print(Reservation r) {
-		if (r.getStatus().equals(Reservation.ResStatus.CHECKED_OUT))
-			System.out.printf("Name: %s, Room Number: %d-%d, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d\n", r.getGuest().getName(), r.getRoom().getRoomLevel(), r.getRoom().getRoomNumber(), r.getCheckInDate().toString(), r.getCheckOutDate().toString(), r.getNoOfAdults(), r.getNoOfChildren());
+		if (r.getResStatus().equals(Reservation.ResStatus.CHECKED_OUT))
+			System.out.printf("Name: %s, Room Number: %d-%d, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d, Reservation Status: %s\n", r.getGuest().getName(), r.getRoom().getRoomLevel(), r.getRoom().getRoomNumber(), r.getCheckInDate().toString(), r.getCheckOutDate().toString(), r.getNoOfAdults(), r.getNoOfChildren(), r.getResStatus().toString());
 		else
-			System.out.printf("Name: %s, Room Number: %d-%d, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d\n", r.getGuest().getName(), r.getRoom().getRoomLevel(), r.getRoom().getRoomNumber(), r.getCheckInDate().toString(), "NIL", r.getNoOfAdults(), r.getNoOfChildren());
+			System.out.printf("Name: %s, Room Number: %d-%d, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d, Reservation Status: %s\n", r.getGuest().getName(), r.getRoom().getRoomLevel(), r.getRoom().getRoomNumber(), r.getCheckInDate().toString(), "NIL", r.getNoOfAdults(), r.getNoOfChildren(), r.getResStatus().toString());
 	}
 }

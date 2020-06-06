@@ -24,7 +24,7 @@ public class Reservation extends Entity implements Serializable{
 	private ResStatus resStatus;
 	private ArrayList<RoomService> roomServiceList;
 	
-	public Reservation(int id, Guest guest, Room room, LocalDate checkInDate, int noOfAdults, int noOfChildren, boolean walkIn) {
+	public Reservation(int id, Guest guest, Room room, LocalDate checkInDate, int noOfAdults, int noOfChildren, ResStatus resStatus) {
 		super(id);
 		roomServiceList = new ArrayList<RoomService>();
 		this.guest = guest;
@@ -33,10 +33,7 @@ public class Reservation extends Entity implements Serializable{
 		this.checkOutDate = null;
 		this.noOfAdults = noOfAdults;
 		this.noOfChildren = noOfChildren;
-		if (walkIn)
-			resStatus = ResStatus.CHECKED_IN;
-		else
-			resStatus = ResStatus.CONFIRMED;
+		this.resStatus = resStatus;
 	}
 	public Guest getGuest() {
 		return guest;
@@ -74,10 +71,10 @@ public class Reservation extends Entity implements Serializable{
 	public void setNoOfChildren(int noOfChildren) {
 		this.noOfChildren = noOfChildren;
 	}
-	public ResStatus getStatus() {
+	public ResStatus getResStatus() {
 		return resStatus;
 	}
-	public void setStatus(ResStatus resStatus) {
+	public void setResStatus(ResStatus resStatus) {
 		this.resStatus = resStatus;
 	}
 	public ArrayList<RoomService> getRoomServiceList() {

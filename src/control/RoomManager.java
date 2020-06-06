@@ -625,4 +625,7 @@ public class RoomManager extends EntityManager implements SelectRoom, AddObject,
 		
 		return choice;
 	}
+	public int getTotalNumberOfRooms() {
+		return roomList.size();
+	}
 }
