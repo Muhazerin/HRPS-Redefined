@@ -23,7 +23,7 @@ import entity.MenuItem;
  *
  */
 
-public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject, SelectObject, AddRoomService, PrintRoomServices{
+public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject, SelectObject, AddRoomService, PrintRoomServices, CheckInReservation{
 	private ArrayList<Reservation> reservationList;
 	private Scanner sc;
 	private ScheduledExecutorService scheduledExecutorService;
@@ -295,6 +295,57 @@ public class ReservationManager extends EntityManager implements AddReservation,
 			}
 		}
  	}
+	@Override
+	public void checkInReservation() {
+		ArrayList<Reservation> tempList = searchReservation();
+		if (tempList.size() == 0) {
+			System.out.println("Reservation does not exist");
+			return;
+		}
+		
+		// filter the tempList
+		for (Reservation reservation : tempList) {
+			if (reservation.getResStatus() != Reservation.ResStatus.CONFIRMED) {
+				tempList.remove(reservation);
+			}
+		}
+		
+		// checks the list again
+		if (tempList.size() > 1) {
+			System.out.println("Multiple reservation found. Please refine your search query");
+			for (Reservation r : tempList) {
+				print(r);
+			}
+			return;
+		}
+		if (tempList.size() == 0) {
+			System.out.println("Reservation does not exist");
+			return;
+		}
+		
+		// if the code reaches here, there's one item in the reservation. Prompt user whether it is the correct reservation
+		System.out.println("Reservation found in the reservationList");
+		print(tempList.get(0));
+		String choice = "";
+		do {
+			System.out.print("Is the right reservation (Y/n): ");
+			choice = sc.nextLine();
+			if (choice.equalsIgnoreCase("y")) {
+				// checks in the guests
+				tempList.get(0).setResStatus(Reservation.ResStatus.CHECKED_IN);
+				this.writeToFile(reservationList, Reservation.class);
+				System.out.println("Reservation status has been set to Checked_In");
+			}
+			else if (choice.equalsIgnoreCase("n")){
+				// exit
+				System.out.println("No other reservation found");
+				return;
+			}
+			else {
+				System.out.println("Invalid Choice");
+			}
+		} while (!choice.equalsIgnoreCase("y") && !choice.equalsIgnoreCase("n"));
+	}
 	
 	/*
 	 * This method is used to ensure that user enters an integer
@@ -340,4 +391,6 @@ public class ReservationManager extends EntityManager implements AddReservation,
 		else
 			System.out.printf("Name: %s, Room Number: %d-%d, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d, Reservation Status: %s\n", r.getGuest().getName(), r.getRoom().getRoomLevel(), r.getRoom().getRoomNumber(), r.getCheckInDate().toString(), "NIL", r.getNoOfAdults(), r.getNoOfChildren(), r.getResStatus().toString());
 	}
+
+
 }

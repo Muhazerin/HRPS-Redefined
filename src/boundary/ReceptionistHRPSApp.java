@@ -73,18 +73,21 @@ public class ReceptionistHRPSApp {
 				} while (option2 != 0);
 				break;
 			case 4:
-				Guest guest = (Guest) guestMgr.selectObject();
-				Room room = roomMgr.selectRoom(true);
-				
-				reservationMgr.addReservation(guest, room, true);
-				break;
-			case 5:
 				option2 = -1;
 				do {
 					menuItemMenu();
 					option2 = intInputChecker(option2, sc);
 					menuItemOption(option2, menuItemMgr);
 				} while (option2 != 0);
+				break;
+			case 5:
+				Guest guest = (Guest) guestMgr.selectObject();
+				Room room = roomMgr.selectRoom(true);
+				
+				reservationMgr.addReservation(guest, room, true);
+				break;
+			case 6:
+				reservationMgr.checkInReservation();
 				break;
 			default:
 				System.out.println("Invalild choice");
@@ -107,8 +110,9 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 1. Guest Options                                    |");
 		System.out.println("| 2. Room Options                                     |");
 		System.out.println("| 3. Reservation Options                              |");
-		System.out.println("| 4. Guest Walk-In                                    |");
-		System.out.println("| 5. Menu Items Options                               |");
+		System.out.println("| 4. Menu Items Options                               |");
+		System.out.println("| 5. Guest Walk-In                                    |");
+		System.out.println("| 6. Guest Check In                                   |");
 		System.out.println("+-----------------------------------------------------+");
 		System.out.print("Enter choice: ");
 	}
