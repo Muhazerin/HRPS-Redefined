@@ -16,6 +16,7 @@ import entity.Room;
 import entity.Reservation;
 import entity.MenuItem;
 import entity.RoomService;
+import entity.Payment;
 
 public class ReceptionistHRPSApp {
 
@@ -89,6 +90,15 @@ public class ReceptionistHRPSApp {
 			case 6:
 				reservationMgr.checkInReservation();
 				break;
+			case 7:
+				Reservation reservation = reservationMgr.checkOutReservation();
+				if (!Objects.equals(reservation, null)) {
+					Payment payment = new Payment(reservation, sc);
+					payment.billReport();
+					payment.pay();
+				}
+				
+				break;
 			default:
 				System.out.println("Invalild choice");
 				break;
@@ -113,6 +123,7 @@ public class ReceptionistHRPSApp {
 		System.out.println("| 4. Menu Items Options                               |");
 		System.out.println("| 5. Guest Walk-In                                    |");
 		System.out.println("| 6. Guest Check In                                   |");
+		System.out.println("| 7. Guest Check Out                                  |");
 		System.out.println("+-----------------------------------------------------+");
 		System.out.print("Enter choice: ");
 	}

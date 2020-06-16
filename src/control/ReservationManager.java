@@ -23,7 +23,7 @@ import entity.MenuItem;
  *
  */
 
-public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject, SelectObject, AddRoomService, PrintRoomServices, CheckInReservation{
+public class ReservationManager extends EntityManager implements AddReservation, ModifyObject, PrintSingleObject, PrintAllObjects, AdjustObject, SelectObject, AddRoomService, PrintRoomServices, CheckInReservation, CheckOutReservation{
 	private ArrayList<Reservation> reservationList;
 	private Scanner sc;
 	private ScheduledExecutorService scheduledExecutorService;
@@ -346,6 +346,27 @@ public class ReservationManager extends EntityManager implements AddReservation,
 			}
 		} while (!choice.equalsIgnoreCase("y") && !choice.equalsIgnoreCase("n"));
 	}
+	@Override
+	public Reservation checkOutReservation() {
+		ArrayList<Reservation> tempList = searchReservation();
+		Reservation reservation = null;
+		
+		if (tempList.size() == 0) {
+			System.out.println("Reservation does not exist");
+			return reservation;
+		}
+		if (tempList.size() > 1){
+			System.out.println("Multiple reservation found. Please refine your query");
+			for (Reservation r : tempList) {
+				print(r);
+			}
+			return reservation;
+		}
+		reservation = tempList.get(0);
+		reservation.setResStatus(Reservation.ResStatus.CHECKED_OUT);
+		reservation.setCheckOutDate(LocalDate.now());
+		return reservation;
+	}
 	
 	/*
 	 * This method is used to ensure that user enters an integer
@@ -391,6 +412,4 @@ public class ReservationManager extends EntityManager implements AddReservation,
 		else
 			System.out.printf("Name: %s, Room Number: %d-%d, Check In Date: %s, Check Out Date: %s, No of Adults: %d, No of Children: %d, Reservation Status: %s\n", r.getGuest().getName(), r.getRoom().getRoomLevel(), r.getRoom().getRoomNumber(), r.getCheckInDate().toString(), "NIL", r.getNoOfAdults(), r.getNoOfChildren(), r.getResStatus().toString());
 	}
-
-
 }

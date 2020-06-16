@@ -86,4 +86,13 @@ public class Reservation extends Entity implements Serializable{
 	public void addRoomService(RoomService roomService) {
 		roomServiceList.add(roomService);
 	}
+	public double getRoomServicePrice() {
+		double total = 0;
+		for (RoomService roomService : roomServiceList) {
+			for (MenuItem menuItem : roomService.getRoomService()) {
+				total += menuItem.getPrice();
+			}
+		}
+		return total;
+	}
 }
